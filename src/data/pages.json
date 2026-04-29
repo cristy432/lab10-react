@@ -1,0 +1,107 @@
+[
+  {
+    "id": "instalare",
+    "titlu": "Instalare",
+    "sectiune": "inceput",
+    "tags": ["setup", "npm", "instalare"],
+    "continut": "BeatKit se instalează prin npm sau yarn. Rulează `npm install beatkit` în directorul proiectului tău. Ai nevoie de Node.js 18+ și un browser modern cu suport Web Audio API. După instalare, importă cu `import { createDeck } from 'beatkit'`. Dacă lucrezi direct în browser fără bundler, există și o versiune CDN disponibilă pe jsDelivr. Verifică instalarea cu `beatkit --version` în terminal."
+  },
+  {
+    "id": "configurare",
+    "titlu": "Configurare audio",
+    "sectiune": "inceput",
+    "tags": ["config", "audio", "setup"],
+    "continut": "Creează un fișier `beatkit.config.js` la rădăcina proiectului. Configurația de bază include: `sampleRate: 44100`, `bufferSize: 256` și `channels: 2` pentru stereo. BeatKit detectează automat dispozitivul audio disponibil, dar poți specifica manual un output device prin `audioOutput: 'deviceId'`. Rulează `npx beatkit init` pentru un wizard interactiv care generează configurația optimă pentru setup-ul tău."
+  },
+  {
+    "id": "primul-deck",
+    "titlu": "Primul deck",
+    "sectiune": "inceput",
+    "tags": ["deck", "tutorial", "inceput"],
+    "continut": "Un deck în BeatKit reprezintă un player virtual, echivalentul unui CDJ fizic. Creează-l cu `const deck = createDeck({ id: 'A' })`. Încarcă un track cu `deck.load('track.mp3')` și pornește redarea cu `deck.play()`. Fiecare deck are propriul context audio izolat, propriul BPM detector și propriul set de efecte. Poți crea câte deck-uri vrei, dar pentru un set clasic sunt suficiente două."
+  },
+  {
+    "id": "structura-proiect",
+    "titlu": "Structura proiectului",
+    "sectiune": "inceput",
+    "tags": ["structura", "organizare", "fisiere"],
+    "continut": "BeatKit recomandă să organizezi proiectul în: `/tracks` pentru fișierele audio, `/samples` pentru one-shot-uri și loop-uri, `/presets` pentru configurații de efecte salvate și `/src` pentru codul aplicației. Fișierele audio suportate sunt MP3, WAV, FLAC și OGG. Fișierele mai mari de 50MB sunt încărcate în streaming automat pentru a nu bloca interfața."
+  },
+  {
+    "id": "bpm-key",
+    "titlu": "BPM și Key detection",
+    "sectiune": "inceput",
+    "tags": ["bpm", "key", "analiza", "auto"],
+    "continut": "BeatKit analizează automat BPM-ul și tonalitatea unui track la încărcare. Accesează rezultatele prin `deck.analysis.bpm` și `deck.analysis.key`. Analiza rulează pe un Web Worker separat ca să nu blocheze UI-ul. Poți forța o re-analiză cu `deck.analyze()`. Precizia BPM detection este de ±0.1 BPM pentru track-uri între 70 și 200 BPM. Key detection folosește algoritmul Camelot Wheel pentru compatibilitate cu alte softuri DJ."
+  },
+  {
+    "id": "mixer-api",
+    "titlu": "Mixer API",
+    "sectiune": "api",
+    "tags": ["mixer", "api", "crossfader", "volum"],
+    "continut": "Mixerul central se creează cu `const mixer = createMixer({ decks: [deckA, deckB] })`. Controlează volumul individual al fiecărui deck prin `mixer.setVolume('A', 0.8)` unde valoarea e între 0 și 1. Crossfader-ul se setează cu `mixer.crossfade(0.5)` — 0 înseamnă complet pe deck A, 1 complet pe deck B. Mixerul suportă și un EQ pe 3 benzi per canal: `mixer.setEQ('A', { low: 0, mid: 1, high: 1.2 })`."
+  },
+  {
+    "id": "efecte",
+    "titlu": "Efecte audio",
+    "sectiune": "api",
+    "tags": ["efecte", "fx", "reverb", "delay", "api"],
+    "continut": "BeatKit include efecte built-in: Reverb, Delay, Flanger, Phaser, BitCrusher și Filter. Aplici un efect pe un deck cu `deck.addEffect('reverb', { roomSize: 0.8, wet: 0.3 })`. Efectele se pot înlănțui și ordinea contează — sunt procesate în ordinea adăugării. Scoate un efect cu `deck.removeEffect('reverb')`. Poți crea efecte custom implementând interfața `AudioEffect` cu metodele `process(input)` și `dispose()`."
+  },
+  {
+    "id": "looping",
+    "titlu": "Loop-uri",
+    "sectiune": "api",
+    "tags": ["loop", "api", "beatloop", "cue"],
+    "continut": "Setează un loop activ cu `deck.setLoop({ bars: 4 })` pentru un loop de 4 bare calculat automat din BPM. Sau specifică manual punctele: `deck.setLoop({ start: 32.5, end: 34.0 })` în secunde. Activează și dezactivează loop-ul cu `deck.toggleLoop()`. BeatKit suportă și loop roll — un loop temporar care revine la poziția originală la eliberare: `deck.loopRoll(0.5)` pentru un half-bar roll."
+  },
+  {
+    "id": "sync-beatmatch",
+    "titlu": "Sync și Beatmatch",
+    "sectiune": "api",
+    "tags": ["sync", "beatmatch", "tempo", "api"],
+    "continut": "Sincronizează automat două deck-uri cu `mixer.sync('B', 'A')` — deck-ul B se aliniază la BPM-ul și faza deck-ului A. Ajustează manual tempo-ul cu `deck.setPitch(0.05)` pentru +5% față de BPM original. `deck.nudge('forward')` și `deck.nudge('back')` fac micro-ajustări temporare de fază, echivalentul împingerii platter-ului pe un vinyl. Toate ajustările de pitch mențin tonalitatea cu key lock activat implicit."
+  },
+  {
+    "id": "cue-points",
+    "titlu": "Cue Points",
+    "sectiune": "api",
+    "tags": ["cue", "hotcue", "api", "navigare"],
+    "continut": "Setează un cue point cu `deck.setCue(1, deck.currentTime)` — primul argument e numărul cue-ului (1-8). Sari la un cue cu `deck.jumpToCue(1)`. Cue-urile sunt salvate automat în localStorage per track. Exportă și importă cue-uri cu `deck.exportCues()` și `deck.importCues(data)` în format JSON. Hot cue-urile pot fi colorate: `deck.setCue(1, time, { color: '#ff4444', label: 'Drop' })`."
+  },
+  {
+    "id": "waveform",
+    "titlu": "Waveform vizuală",
+    "sectiune": "vizualizare",
+    "tags": ["waveform", "canvas", "vizualizare", "ui"],
+    "continut": "BeatKit include un renderer de waveform bazat pe Canvas. Atașează-l la un element canvas cu `const wv = createWaveform(deck, canvasElement)`. Waveform-ul se actualizează în timp real la redare. Personalizează culorile cu `wv.setColors({ background: '#111', waveform: '#00ff88', playhead: '#ff0000' })`. Waveform-ul suportă și zoom: `wv.setZoom(2)` pentru a vedea mai mult detaliu. Click pe waveform navighează la acea poziție din track."
+  },
+  {
+    "id": "spectrum",
+    "titlu": "Spectrum Analyzer",
+    "sectiune": "vizualizare",
+    "tags": ["spectrum", "fft", "vizualizare", "frecvente"],
+    "continut": "Analizorul de spectru afișează frecvențele audio în timp real folosind FFT. Creează-l cu `const spectrum = createSpectrum(deck, canvasElement, { fftSize: 2048 })`. FFT size mai mare înseamnă mai multă rezoluție frecvențială dar latență mai mare — 2048 e un compromis bun. Poți accesa datele raw dacă vrei să faci propriul renderer: `spectrum.getFrequencyData()` returnează un Uint8Array cu 1024 valori. Culorile sunt complet customizabile prin gradient."
+  },
+  {
+    "id": "vu-meter",
+    "titlu": "VU Meter",
+    "sectiune": "vizualizare",
+    "tags": ["vu", "nivel", "vizualizare", "clipping"],
+    "continut": "VU Meter-ul afișează nivelul de semnal în timp real cu detecție de clipping. Creează-l cu `const vu = createVUMeter(deck, containerElement)`. Zonele de culoare sunt: verde pentru -20dB până la -6dB, galben pentru -6dB până la 0dB și roșu pentru orice depășire de 0dB. Configurează hold time pentru peak indicator cu `vu.setPeakHold(2000)` în milisecunde. Poți citi valorile programatic cu `vu.getLevel()` care returnează un obiect `{ left, right, peak }` în dB."
+  },
+  {
+    "id": "recording",
+    "titlu": "Înregistrare set",
+    "sectiune": "vizualizare",
+    "tags": ["recording", "record", "export", "wav"],
+    "continut": "BeatKit poate înregistra output-ul mixerului direct în browser. Pornește înregistrarea cu `mixer.startRecording()` și oprește cu `mixer.stopRecording()` care returnează un Blob WAV. Salvează local cu `mixer.downloadRecording('set-2024.wav')`. Calitatea implicită e 44100Hz/16bit stereo, dar poți seta 48000Hz și 24bit în config pentru calitate de studio. Înregistrarea e procesată pe un OfflineAudioContext separat ca să nu afecteze performanța în timp real."
+  },
+  {
+    "id": "plugin-system",
+    "titlu": "Sistem de plugin-uri",
+    "sectiune": "vizualizare",
+    "tags": ["plugin", "extensii", "custom", "api"],
+    "continut": "Extinde BeatKit cu plugin-uri custom. Un plugin implementează interfața `{ name: string, install(beatkit): void }`. Înregistrează cu `beatkit.use(MyPlugin)`. Plugin-urile oficiale disponibile: `@beatkit/stems` pentru separare stems cu AI, `@beatkit/sync-server` pentru sincronizare multi-device prin WebSockets și `@beatkit/midi` pentru conectarea controllerelor MIDI fizice. Fiecare plugin are acces la contextul audio global și poate adăuga metode noi pe instanțele de deck și mixer."
+  }
+]
